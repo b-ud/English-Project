@@ -13,8 +13,7 @@
 
 **Location**: Pencey Prep, Agerstown, Pennsylvania
 
-**Description**: Holden is physically expelled from Pencey, the latest in a series of rejections. He realizes he's a chronic liar and phony himself, caught in the system he despises.
-
+**Description**: Holden is physically expelled from Pencey, the latest in a series of rejections. He is trying to search for a closure of his childhood 
 **Emotional State**: -8.0/10
 
 **People Involved**: Mr. Spencer (ex-teacher)

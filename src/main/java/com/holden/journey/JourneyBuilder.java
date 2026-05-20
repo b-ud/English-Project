@@ -15,32 +15,26 @@ public class JourneyBuilder {
             "Late afternoon",
             -8.0,
             "Pencey Prep, Agerstown, Pennsylvania",
-            "Holden is physically expelled from Pencey, the latest in a series of rejections. " +
-            "He realizes he's a chronic liar and phony himself, caught in the system he despises."
-        );
+            "Holden is physically expelled from Pencey, lingering around the city to say goodbye yet feeling emotionally detached.);
         penceyDeparture.addPerson("Mr. Spencer (ex-teacher)");
         penceyDeparture.addQuote(" What I was really hanging around for, I was trying to feel some kind of a good-by(4)");
-        penceyDeparture.addAnalysis("Holden's departure from Pencey is has a deeper meaning that simply being kicked out of school, it represents his departure from his childhood and a place that he has always been at. His desire for a \"good-by\" shows that he is in search for a good ending of his childhood, at the same time, Holden is miserable, he is numb about what he is supposed to feel because he is emotionally detached from others.");
+        penceyDeparture.addAnalysis("Holden's departure from Pencey is has a deeper meaning that simply being kicked out of school, it represents his departure from his academic life and a place that his parents wanted him to be at. This not only showed the growth of departure from the parents, but also marked the beginning of Holden's unique point of view on things. His desire for a \"good-by\" shows that he is in search for a good ending of his childhood, at the same time, Holden is miserable, he is numb about what he is supposed to feel because he is emotionally detached from others.");
         penceyDeparture.setThemeticElements("Phoniness, Social decay, Adolescent alienation");
         journey.addLocation(penceyDeparture);
 
         // Day 1 - Grand Central/Hotel Arrival
         JourneyLocation hotelArrival = new JourneyLocation(
-            "Grand Central Terminal & Hotel Edmont",
+            "Hotel Edmont",
             "Day 1 - Night",
             "Evening/Night",
             -6.5,
             "Manhattan, NYC",
-            "Holden arrives in Manhattan after an ambiguous journey. The city represents both " +
-            "freedom and entrapment. He checks into the seedy Hotel Edmont, surrounded by phonies " +
-            "and perverts, paying $60 for a depressing room."
+            "Holden arrives in Manhattan after departing from Pencey. Which represents both " +
+            "freedom and entrapment to Holden. He checks into the Hotel Edmont, surrounded by phonies "
         );
-        hotelArrival.addPerson("Taxi drivers, hotel staff");
-        hotelArrival.addQuote("Somebody'd written 'Fuck you' on the wall. It killed me.");
-        hotelArrival.addAnalysis("The graffiti represents the crude honesty Holden craves beneath society's " +
-            "veneer—yet it 'kills' him with existential dread. The hotel embodies urban degradation: " +
-            "a microcosm of the phony world he both enters and abhors. His obsession with 'perversion' " +
-            "reflects his confusion about sexuality and adult hypocrisy.");
+        hotelArrival.addPerson("Phonies inside the Hotel");
+        hotelArrival.addQuote("We got to the Edmont Hotel, and I checked in. I'd put on my red hunting cap when I was in the cab, just for the hell of it, but I took it off before I checked in. I didn't want to look like a screwball or something. Which is really ironic. I didn't know then that the goddam hotel was full of perverts and morons. Screwballs all over the place. (68)");
+        hotelArrival.addAnalysis("");
         hotelArrival.setThemeticElements("Urban decay, Phoniness, Existential dread, Sexual confusion");
         journey.addLocation(hotelArrival);
 
