@@ -3,7 +3,11 @@ package com.holden.journey;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 /**
@@ -14,6 +18,7 @@ public class USMapPanel extends JPanel {
     private int hoveredPin = -1;
     private int selectedPin = -1;
     private MapSelectionListener listener;
+    private BufferedImage mapImage;
     private static final int MAP_PADDING = 40;
     private static final int PIN_RADIUS = 10;
 
@@ -23,11 +28,13 @@ public class USMapPanel extends JPanel {
 
     public USMapPanel(List<JourneyLocation> locations) {
         this.locations = locations;
+        loadMapImage();
         setupUSCoordinates();
         setBackground(new Color(240, 245, 250));
-        setPreferredSize(new Dimension(1000, 600));
+        setPreferredSize(new Dimension(mapImage != null ? mapImage.getWidth() : 1000,
+                mapImage != null ? mapImage.getHeight() : 600));
 
-        addMouseListener(new MouseAdapter() {
+        MouseAdapter mouseHandler = new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 handleClick(e.getX(), e.getY());
@@ -41,34 +48,35 @@ public class USMapPanel extends JPanel {
                     repaint();
                 }
             }
-        });
+        };
 
-        addMouseMotionListener(new MouseAdapter() {
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                int newHovered = getPin(e.getX(), e.getY());
-                if (newHovered != hoveredPin) {
-                    hoveredPin = newHovered;
-                    repaint();
-                }
+        addMouseListener(mouseHandler);
+        addMouseMotionListener(mouseHandler);
+    }
+
+    private void loadMapImage() {
+        URL imageUrl = getClass().getResource("/us-map.png");
+        if (imageUrl != null) {
+            try {
+                mapImage = ImageIO.read(imageUrl);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
+        }
     }
 
     private void setupUSCoordinates() {
-        // US Map coordinates (normalized 0-100 scale, left to right, top to bottom)
-        // Approximate US state positions
         double[][] usCoords = {
-            {25, 65},   // Pencey Prep (Pennsylvania) - Start
-            {35, 70},   // NYC - Grand Central Terminal
-            {35, 70},   // Hotel Edmont (same area)
-            {35, 70},   // Sally Hayes Date (same area)
-            {35, 70},   // Central Park (same area)
-            {35, 70},   // Museum (same area)
-            {35, 70},   // Ducks (same area)
-            {35, 70},   // Antolini's Apartment (same area)
-            {35, 70},   // Grand Central Terminal (same area)
-            {90, 75}    // California - Hospital (Far West)
+            {40.44, -75.33},   // Pencey Prep (Pennsylvania) - Start
+            {40.75, -73.98},   // NYC - Grand Central Terminal
+            {40.75, -73.98},   // Hotel Edmont (same area)
+            {40.75, -73.98},   // Sally Hayes Date (same area)
+            {40.75, -73.98},   // Central Park (same area)
+            {40.75, -73.98},   // Museum (same area)
+            {40.75, -73.98},   // Ducks (same area)
+            {40.75, -73.98},   // Antolini's Apartment (same area)
+            {40.75, -73.98},   // Grand Central Terminal (same area)
+            {37.77, -122.42}   // California - Hospital (San Francisco area)
         };
 
         for (int i = 0; i < locations.size() && i < usCoords.length; i++) {
@@ -93,10 +101,8 @@ public class USMapPanel extends JPanel {
 
     private int getPin(int x, int y) {
         for (int i = 0; i < locations.size(); i++) {
-            int pinX = (int) (MAP_PADDING + locations.get(i).getLatitude() * (getWidth() - 2 * MAP_PADDING) / 100);
-            int pinY = (int) (MAP_PADDING + locations.get(i).getLongitude() * (getHeight() - 2 * MAP_PADDING) / 100);
-
-            if (Math.sqrt(Math.pow(x - pinX, 2) + Math.pow(y - pinY, 2)) <= PIN_RADIUS) {
+            Point pinPoint = geoToPixel(locations.get(i).getLatitude(), locations.get(i).getLongitude());
+            if (Math.sqrt(Math.pow(x - pinPoint.x, 2) + Math.pow(y - pinPoint.y, 2)) <= PIN_RADIUS) {
                 return i;
             }
         }
@@ -109,135 +115,127 @@ public class USMapPanel extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        drawMapBackground(g2d);
-        drawUSOutline(g2d);
+        if (mapImage != null) {
+            Rectangle mapArea = getMapArea();
+            g2d.drawImage(mapImage, mapArea.x, mapArea.y, mapArea.width, mapArea.height, null);
+        } else {
+            drawMapBackground(g2d);
+            drawUSOutline(g2d);
+        }
+
         drawStateLabels(g2d);
         drawJourneyPath(g2d);
         drawPins(g2d);
         drawLegend(g2d);
     }
 
+    private Rectangle getMapArea() {
+        return new Rectangle(MAP_PADDING, MAP_PADDING,
+                Math.max(100, getWidth() - 2 * MAP_PADDING), Math.max(100, getHeight() - 2 * MAP_PADDING));
+    }
+
+    private Point geoToPixel(double lat, double lon) {
+        Rectangle mapArea = getMapArea();
+        double minLat = 24.5;
+        double maxLat = 49.5;
+        double minLon = -125.0;
+        double maxLon = -66.5;
+
+        double xNorm = (lon - minLon) / (maxLon - minLon);
+        double yNorm = (maxLat - lat) / (maxLat - minLat);
+        xNorm = Math.max(0, Math.min(1, xNorm));
+        yNorm = Math.max(0, Math.min(1, yNorm));
+
+        int x = mapArea.x + (int) (xNorm * mapArea.width);
+        int y = mapArea.y + (int) (yNorm * mapArea.height);
+        return new Point(x, y);
+    }
+
     private void drawMapBackground(Graphics2D g2d) {
-        // Water background
         g2d.setColor(new Color(170, 200, 240));
         g2d.fillRect(0, 0, getWidth(), getHeight());
 
-        // US map area (land)
         g2d.setColor(new Color(220, 235, 200));
         g2d.fillRect(MAP_PADDING, MAP_PADDING, getWidth() - 2 * MAP_PADDING, getHeight() - 2 * MAP_PADDING);
 
-        // Border
         g2d.setColor(Color.BLACK);
         g2d.setStroke(new BasicStroke(2));
         g2d.drawRect(MAP_PADDING, MAP_PADDING, getWidth() - 2 * MAP_PADDING, getHeight() - 2 * MAP_PADDING);
 
-        // Title
         g2d.setFont(new Font("Arial", Font.BOLD, 18));
         g2d.setColor(Color.BLACK);
         g2d.drawString("Holden's Journey: From Pennsylvania to California", 10, 25);
     }
 
     private void drawUSOutline(Graphics2D g2d) {
-        // Simple representation of US boundary (just for visual context)
         g2d.setColor(new Color(100, 100, 100, 50));
         g2d.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        
-        // Grid for reference
-        g2d.setColor(new Color(200, 220, 210));
-        g2d.setStroke(new BasicStroke(0.5f));
-        for (int i = 0; i <= 10; i++) {
-            int x = MAP_PADDING + i * (getWidth() - 2 * MAP_PADDING) / 10;
-            int y = MAP_PADDING + i * (getHeight() - 2 * MAP_PADDING) / 10;
-            g2d.drawLine(x, MAP_PADDING, x, getHeight() - MAP_PADDING);
-            g2d.drawLine(MAP_PADDING, y, getWidth() - MAP_PADDING, y);
-        }
+        g2d.drawRect(MAP_PADDING, MAP_PADDING, getWidth() - 2 * MAP_PADDING, getHeight() - 2 * MAP_PADDING);
     }
 
     private void drawStateLabels(Graphics2D g2d) {
         g2d.setFont(new Font("Arial", Font.PLAIN, 10));
         g2d.setColor(new Color(100, 100, 100));
 
-        // Label key regions
-        int labelX1 = MAP_PADDING + 10;
-        int labelY1 = MAP_PADDING + 40;
-        g2d.drawString("Pennsylvania", labelX1, labelY1);
+        Point paPoint = geoToPixel(40.44, -75.33);
+        g2d.drawString("Pennsylvania", paPoint.x + 10, paPoint.y - 10);
 
-        int labelX2 = MAP_PADDING + 15;
-        int labelY2 = MAP_PADDING + 60;
-        g2d.drawString("New York", labelX2, labelY2);
+        Point nyPoint = geoToPixel(40.75, -73.98);
+        g2d.drawString("New York", nyPoint.x + 10, nyPoint.y + 15);
 
-        int labelX3 = (int) (MAP_PADDING + 90 * (getWidth() - 2 * MAP_PADDING) / 100) - 40;
-        int labelY3 = MAP_PADDING + 40;
-        g2d.drawString("California", labelX3, labelY3);
+        Point caPoint = geoToPixel(37.77, -122.42);
+        g2d.drawString("California", caPoint.x - 70, caPoint.y + 20);
     }
 
     private void drawJourneyPath(Graphics2D g2d) {
         if (locations.size() < 2) return;
 
-        // Main journey line from PA to CA
         g2d.setStroke(new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        g2d.setColor(new Color(220, 100, 100, 180)); // Red path
+        g2d.setColor(new Color(220, 100, 100, 180));
 
-        // Draw line from first location (Pencey) to last location (Hospital in CA)
-        int startX = (int) (MAP_PADDING + locations.get(0).getLatitude() * (getWidth() - 2 * MAP_PADDING) / 100);
-        int startY = (int) (MAP_PADDING + locations.get(0).getLongitude() * (getHeight() - 2 * MAP_PADDING) / 100);
+        Point start = geoToPixel(locations.get(0).getLatitude(), locations.get(0).getLongitude());
+        Point end = geoToPixel(locations.get(locations.size() - 1).getLatitude(), locations.get(locations.size() - 1).getLongitude());
+        g2d.drawLine(start.x, start.y, end.x, end.y);
 
-        int endX = (int) (MAP_PADDING + locations.get(locations.size() - 1).getLatitude() * (getWidth() - 2 * MAP_PADDING) / 100);
-        int endY = (int) (MAP_PADDING + locations.get(locations.size() - 1).getLongitude() * (getHeight() - 2 * MAP_PADDING) / 100);
-
-        g2d.drawLine(startX, startY, endX, endY);
-
-        // Draw sub-path for NYC cluster
         if (locations.size() > 2) {
             g2d.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-            g2d.setColor(new Color(100, 150, 200, 150)); // Blue for NYC detail
+            g2d.setColor(new Color(100, 150, 200, 150));
 
             for (int i = 1; i < locations.size() - 1; i++) {
-                int x1 = (int) (MAP_PADDING + locations.get(i).getLatitude() * (getWidth() - 2 * MAP_PADDING) / 100);
-                int y1 = (int) (MAP_PADDING + locations.get(i).getLongitude() * (getHeight() - 2 * MAP_PADDING) / 100);
-                
-                if (i < locations.size() - 1) {
-                    int x2 = (int) (MAP_PADDING + locations.get(i + 1).getLatitude() * (getWidth() - 2 * MAP_PADDING) / 100);
-                    int y2 = (int) (MAP_PADDING + locations.get(i + 1).getLongitude() * (getHeight() - 2 * MAP_PADDING) / 100);
-                    g2d.drawLine(x1, y1, x2, y2);
-                }
+                Point p1 = geoToPixel(locations.get(i).getLatitude(), locations.get(i).getLongitude());
+                Point p2 = geoToPixel(locations.get(i + 1).getLatitude(), locations.get(i + 1).getLongitude());
+                g2d.drawLine(p1.x, p1.y, p2.x, p2.y);
             }
         }
     }
 
     private void drawPins(Graphics2D g2d) {
         for (int i = 0; i < locations.size(); i++) {
-            int pinX = (int) (MAP_PADDING + locations.get(i).getLatitude() * (getWidth() - 2 * MAP_PADDING) / 100);
-            int pinY = (int) (MAP_PADDING + locations.get(i).getLongitude() * (getHeight() - 2 * MAP_PADDING) / 100);
+            Point pinPoint = geoToPixel(locations.get(i).getLatitude(), locations.get(i).getLongitude());
+            int pinX = pinPoint.x;
+            int pinY = pinPoint.y;
 
-            // Highlight special locations
             if (i == 0) {
-                // Start: Pencey Prep
                 g2d.setColor(new Color(100, 200, 100));
                 g2d.fillOval(pinX - PIN_RADIUS, pinY - PIN_RADIUS, 2 * PIN_RADIUS, 2 * PIN_RADIUS);
                 g2d.setColor(Color.BLACK);
                 g2d.setStroke(new BasicStroke(2));
                 g2d.drawOval(pinX - PIN_RADIUS, pinY - PIN_RADIUS, 2 * PIN_RADIUS, 2 * PIN_RADIUS);
-
                 g2d.setFont(new Font("Arial", Font.BOLD, 9));
                 g2d.drawString("START", pinX + PIN_RADIUS + 5, pinY - 5);
             } else if (i == locations.size() - 1) {
-                // End: California Hospital
                 g2d.setColor(new Color(200, 100, 100));
                 g2d.fillOval(pinX - PIN_RADIUS, pinY - PIN_RADIUS, 2 * PIN_RADIUS, 2 * PIN_RADIUS);
                 g2d.setColor(Color.BLACK);
                 g2d.setStroke(new BasicStroke(2));
                 g2d.drawOval(pinX - PIN_RADIUS, pinY - PIN_RADIUS, 2 * PIN_RADIUS, 2 * PIN_RADIUS);
-
                 g2d.setFont(new Font("Arial", Font.BOLD, 9));
                 g2d.drawString("END", pinX - 20, pinY - 15);
             } else {
-                // NYC locations
                 if (hoveredPin == i || selectedPin == i) {
                     g2d.setColor(new Color(255, 200, 0));
                     g2d.fillOval(pinX - PIN_RADIUS - 2, pinY - PIN_RADIUS - 2, 2 * PIN_RADIUS + 4, 2 * PIN_RADIUS + 4);
                 }
-
                 g2d.setColor(new Color(100, 150, 220));
                 g2d.fillOval(pinX - PIN_RADIUS, pinY - PIN_RADIUS, 2 * PIN_RADIUS, 2 * PIN_RADIUS);
                 g2d.setColor(Color.BLACK);
@@ -245,7 +243,6 @@ public class USMapPanel extends JPanel {
                 g2d.drawOval(pinX - PIN_RADIUS, pinY - PIN_RADIUS, 2 * PIN_RADIUS, 2 * PIN_RADIUS);
             }
 
-            // Show tooltip on hover
             if (hoveredPin == i) {
                 g2d.setFont(new Font("Arial", Font.PLAIN, 10));
                 g2d.setColor(new Color(50, 50, 50));
@@ -269,7 +266,6 @@ public class USMapPanel extends JPanel {
         legendY += 20;
         g2d.setFont(new Font("Arial", Font.PLAIN, 10));
 
-        // Start marker
         g2d.setColor(new Color(100, 200, 100));
         g2d.fillOval(legendX, legendY - 8, 12, 12);
         g2d.setColor(Color.BLACK);
@@ -278,7 +274,6 @@ public class USMapPanel extends JPanel {
 
         legendY += 18;
 
-        // NYC locations
         g2d.setColor(new Color(100, 150, 220));
         g2d.fillOval(legendX, legendY - 8, 12, 12);
         g2d.setColor(Color.BLACK);
@@ -287,7 +282,6 @@ public class USMapPanel extends JPanel {
 
         legendY += 18;
 
-        // End marker
         g2d.setColor(new Color(200, 100, 100));
         g2d.fillOval(legendX, legendY - 8, 12, 12);
         g2d.setColor(Color.BLACK);
