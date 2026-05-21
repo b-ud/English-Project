@@ -12,6 +12,7 @@ public class JourneyVisualizerGUI extends JFrame {
     private EmotionalStateGraphPanel graph;
     private LocationDetailsPanel details;
     private NYCMapPanel map;
+    private USMapPanel usMap;
 
     public JourneyVisualizerGUI() {
         setTitle("Holden Caulfield's Journey - Interactive Visualizer");
@@ -27,6 +28,7 @@ public class JourneyVisualizerGUI extends JFrame {
         graph = new EmotionalStateGraphPanel(journey.getLocations());
         details = new LocationDetailsPanel();
         map = new NYCMapPanel(journey.getLocations());
+        usMap = new USMapPanel(journey.getLocations());
 
         // Set up location selection listener
         locationList.setSelectionListener(location -> {
@@ -35,6 +37,11 @@ public class JourneyVisualizerGUI extends JFrame {
         });
 
         map.setSelectionListener(location -> {
+            details.displayLocation(location);
+            repaint();
+        });
+
+        usMap.setSelectionListener(location -> {
             details.displayLocation(location);
             repaint();
         });
@@ -53,6 +60,8 @@ public class JourneyVisualizerGUI extends JFrame {
         JTabbedPane centerTabs = new JTabbedPane();
         
         JScrollPane mapScroll = new JScrollPane(map);
+        JScrollPane usMapScroll = new JScrollPane(usMap);
+        centerTabs.addTab("US Journey Map (PA to CA)", usMapScroll);
         centerTabs.addTab("NYC Map & Journey Path", mapScroll);
         centerTabs.addTab("Emotional State Graph", graph);
         centerTabs.addTab("Location Details", details);

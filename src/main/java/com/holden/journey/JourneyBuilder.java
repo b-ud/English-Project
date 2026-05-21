@@ -15,10 +15,10 @@ public class JourneyBuilder {
             "Late afternoon",
             -8.0,
             "Pencey Prep, Agerstown, Pennsylvania",
-            "Holden is physically expelled from Pencey, lingering around the city to say goodbye yet feeling emotionally detached.);
+            "Holden is physically expelled from Pencey, lingering around the city to say goodbye yet feeling emotionally detached.");
         penceyDeparture.addPerson("Mr. Spencer (ex-teacher)");
         penceyDeparture.addQuote(" What I was really hanging around for, I was trying to feel some kind of a good-by(4)");
-        penceyDeparture.addAnalysis("Holden's departure from Pencey is has a deeper meaning that simply being kicked out of school, it represents his departure from his academic life and a place that his parents wanted him to be at. This not only showed the growth of departure from the parents, but also marked the beginning of Holden's unique point of view on things. His desire for a \"good-by\" shows that he is in search for a good ending of his childhood, at the same time, Holden is miserable, he is numb about what he is supposed to feel because he is emotionally detached from others.");
+        penceyDeparture.addAnalysis("Holden's departure from Pencey has a deeper meaning that simply being kicked out of school, it represents his departure from his academic life and a place that his parents wanted him to be at. This not only showed the growth of departure from the parents, but also marked the beginning of Holden's unique point of view on things. His desire for a \"good-by\" shows that he is in search for a good ending of his childhood, at the same time, Holden is miserable, he is numb about what he is supposed to feel because he is emotionally detached from others.");
         penceyDeparture.setThemeticElements("Phoniness, Social decay, Adolescent alienation");
         journey.addLocation(penceyDeparture);
 
@@ -30,7 +30,7 @@ public class JourneyBuilder {
             -6.5,
             "Manhattan, NYC",
             "Holden arrives in Manhattan after departing from Pencey. Which represents both " +
-            "freedom and entrapment to Holden. He checks into the Hotel Edmont, surrounded by phonies "
+            "freedom and entrapment to Holden. He checks into the Hotel Edmont, surrounded by phonies and perverts."
         );
         hotelArrival.addPerson("Phonies inside the Hotel");
         hotelArrival.addQuote("We got to the Edmont Hotel, and I checked in. I'd put on my red hunting cap when I was in the cab, just for the hell of it, but I took it off before I checked in. I didn't want to look like a screwball or something. Which is really ironic. I didn't know then that the goddam hotel was full of perverts and morons. Screwballs all over the place. (68)");

@@ -13,7 +13,8 @@
 
 **Location**: Pencey Prep, Agerstown, Pennsylvania
 
-**Description**: Holden is physically expelled from Pencey, the latest in a series of rejections. He is trying to search for a closure of his childhood 
+**Description**: Holden is physically expelled from Pencey, lingering around the city to say goodbye yet feeling emotionally detached.
+
 **Emotional State**: -8.0/10
 
 **People Involved**: Mr. Spencer (ex-teacher)
@@ -22,28 +23,28 @@
 - " What I was really hanging around for, I was trying to feel some kind of a good-by(4)"
 
 **Analysis**:
-- Holden's departure from Pencey is has a deeper meaning that simply being kicked out of school, it represents his departure from his childhood and a place that he has always been at. His desire for a "good-by" shows that he is in search for a good ending of his childhood, at the same time, Holden is miserable, he is numb about what he is supposed to feel because he is emotionally detached from others.
+- Holden's departure from Pencey has a deeper meaning that simply being kicked out of school, it represents his departure from his academic life and a place that his parents wanted him to be at. This not only showed the growth of departure from the parents, but also marked the beginning of Holden's unique point of view on things. His desire for a "good-by" shows that he is in search for a good ending of his childhood, at the same time, Holden is miserable, he is numb about what he is supposed to feel because he is emotionally detached from others.
 
 **Thematic Elements**: Phoniness, Social decay, Adolescent alienation
 
 ---
 
-### 2. Grand Central Terminal & Hotel Edmont
+### 2. Hotel Edmont
 **Day/Time**: Day 1 - Night - Evening/Night
 
 **Location**: Manhattan, NYC
 
-**Description**: Holden arrives in Manhattan after an ambiguous journey. The city represents both freedom and entrapment. He checks into the seedy Hotel Edmont, surrounded by phonies and perverts, paying $60 for a depressing room.
+**Description**: Holden arrives in Manhattan after departing from Pencey. Which represents both freedom and entrapment to Holden. He checks into the Hotel Edmont, surrounded by phonies and perverts.
 
 **Emotional State**: -6.5/10
 
-**People Involved**: Taxi drivers, hotel staff
+**People Involved**: Phonies inside the Hotel
 
 **Key Quote(s)**:
-- "Somebody'd written 'Fuck you' on the wall. It killed me."
+- "We got to the Edmont Hotel, and I checked in. I'd put on my red hunting cap when I was in the cab, just for the hell of it, but I took it off before I checked in. I didn't want to look like a screwball or something. Which is really ironic. I didn't know then that the goddam hotel was full of perverts and morons. Screwballs all over the place. (68)"
 
 **Analysis**:
-- The graffiti represents the crude honesty Holden craves beneath society's veneer—yet it 'kills' him with existential dread. The hotel embodies urban degradation: a microcosm of the phony world he both enters and abhors. His obsession with 'perversion' reflects his confusion about sexuality and adult hypocrisy.
+- 
 
 **Thematic Elements**: Urban decay, Phoniness, Existential dread, Sexual confusion
 
