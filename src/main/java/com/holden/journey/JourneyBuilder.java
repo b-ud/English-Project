@@ -8,7 +8,6 @@ public class JourneyBuilder {
     public static void main(String[] args) {
         HoldenJourney journey = new HoldenJourney();
 
-        // Day 1 - The Departure and Arrival in the Phonies' World
         JourneyLocation penceyDeparture = new JourneyLocation(
             "Pencey Prep Departure",
             "Day 1 - Saturday",
@@ -22,7 +21,20 @@ public class JourneyBuilder {
         penceyDeparture.setThemeticElements("Phoniness, Social decay, Adolescent alienation");
         journey.addLocation(penceyDeparture);
 
-        // Day 1 - Grand Central/Hotel Arrival
+        JourneyLocation penceyToManhattan = new JourneyLocation(
+            "Pencey to Menhattan",
+            "Day 1 - Saturday",
+            "Late afternoon",
+            -7.0,
+            "Pencey Prep, Agerstown, Pennsylvania to Manhattan, NYC",
+            "Holden departs Pencey and begins his journey back toward Manhattan while still feeling detached and uncertain about where he belongs."
+        );
+        penceyToManhattan.addPerson("None");
+        penceyToManhattan.addQuote("-\"I mean I've left school and places I didn't even know I was leaving.\" (4)");
+        penceyToManhattan.addAnalysis("Analysis: This quote depicts the transition of Holden's withdrawal from the school in Pencey Prep at Pennsylvania to now returning to Manhattan. Where he has always been living. I chose this quote because it represents the collapse of Holden parents' expectations and marked the beginning of Holden's journey in seeking the meaning of life. At the same time, it shows Holden's emotional numbness that he feels when facing changes and movements.");
+        penceyToManhattan.setThemeticElements("Transition, Detachment, Family expectations");
+        journey.addLocation(penceyToManhattan);
+
         JourneyLocation hotelArrival = new JourneyLocation(
             "Hotel Edmont",
             "Day 1 - Night",
@@ -38,171 +50,103 @@ public class JourneyBuilder {
         hotelArrival.setThemeticElements("Urban decay, Phoniness, Existential dread, Sexual confusion");
         journey.addLocation(hotelArrival);
 
-        // Day 1 - Sally Hayes Encounter (Lead-in)
         JourneyLocation sallyPlans = new JourneyLocation(
             "Planning the Sally Encounter",
             "Day 1 - Night",
             "Late night (phone call)",
             -7.0,
             "Hotel room, Manhattan",
-            "Holden calls Sally Hayes, a girl he once dated. He's intoxicated and lonely, " +
-            "seeking connection but already cynical about the interaction ahead. He knows " +
-            "Sally represents the phoniness he abhors."
+            "Holden calls Sally Hayes, a girl he once dated. Try to seek emotional connection but already posess a negative feeling about the interaction ahead before even truly calling her. He knows Sally represents the phoniness that he hates and dislikes."
         );
         sallyPlans.addPerson("Sally Hayes (off-scene)");
-        sallyPlans.addQuote("I'm in terrible shape.");
-        sallyPlans.addAnalysis("Holden's admission of psychological breakdown is clothed in his typical " +
-            "casual language. He recognizes his deterioration but lacks agency or desire to change. " +
-            "The 'terrible shape' prefigures his eventual hospitalization and sets up his pattern " +
-            "of emotional instability throughout the novel.");
+        sallyPlans.addQuote("Key Quotes: \"She'd written me this long, phony letter, inviting me over to help her trim the Christmas tree Christmas Eve and all-- but I was afraid her mother'd answer the phone.\"(67)");
+        sallyPlans.addAnalysis("Analysis: This moment of reflection on Sally, who he once dated demonstrated the emotional stuggle and increasing hatred toward phonies. The symbol of a \"phony letter\" depicts Holden's growth of despise toward adult hypocrisy and socia conformity. At the same time, Holden seems to have lost hope and excitement toward things he has once loved, which is evident when he convinced himself not to call Sally because he is afraid of Sally's mother. When an individual desires something, they give their best effort to achieve it. But in the case of Holden, he desires something but he is too araid to give action, which shows his own hypocritical nature.");
         sallyPlans.setThemeticElements("Mental health decline, Isolation, Performative social engagement");
         journey.addLocation(sallyPlans);
 
-        // Day 2 - Sally Hayes Date
         JourneyLocation sallyDate = new JourneyLocation(
-            "Sally Hayes Date - Theater & Lunch",
+            "Sally Hayes Date - Theater",
             "Day 2 - Sunday",
             "Afternoon/Early evening",
             -4.0,
-            "Theater district & upscale restaurant, Midtown Manhattan",
-            "Holden takes Sally to a theater matinee and lunch. He initially plays the phony game, " +
-            "wearing the social mask. The date reveals his internal conflict: desire for genuine " +
-            "connection clashing with his contempt for Sally's superficiality and bourgeois phoniness."
+            "Theater in Manhattan, New York",
+            "Hoolden takes Sally to a date and decides to pick two orchestra seats rather than going with what he likes."
         );
         sallyDate.addPerson("Sally Hayes, theater audience");
-        sallyDate.addQuote("She was very merry and all, but I don't think I ever really liked her much.");
-        sallyDate.addAnalysis("This reveals Holden's core problem: he's incapable of authentic relationships. " +
-            "Sally's cheerfulness doesn't penetrate his alienation. The date satirizes upper-class " +
-            "entertainment and dating rituals as hollow performances. Holden resents her for being " +
-            "'merry'—for failing to recognize the phoniness they're both performing.");
-        sallyDate.setThemeticElements("Class satire, Phoniness, Incapability of connection, Romantic alienation");
+        sallyDate.addQuote("Key Quotes: \"So what I did was, I went over and bought two orchestra seats for I Know My Love. It was a benefit performance or something. I didn't much want to see it, but I knew old Sally, the queen of the phonies\" (126)");
+        sallyDate.addAnalysis("Analysis: While Holden himself described Sally as a \"queen of the phonies\" he is also performing what would be considered a phony action himself trying to earn the happiness of Sally. By selecting a show that would favor Sally but not himself, he is depicting an action of phonies and social conformation as he decided to benefit others over himself when making decisions. Moreover, Sally's cheerfulness and truthfulness doesn't break Holden's barrier toward phonies, he is solely too doubtful and afraid to accept others.");
+        sallyDate.setThemeticElements("Phoniness, Incapability of connection, Romantic alienation");
         journey.addLocation(sallyDate);
 
-        // Day 2 - Impulsive Escape to Central Park
         JourneyLocation centralParkEscape = new JourneyLocation(
             "Central Park - Breaking Point",
             "Day 2 - Late afternoon",
             "Dusk",
             -8.5,
             "Central Park, Manhattan",
-            "After the Sally disaster, Holden breaks down and desperately asks if she'll go away with him. " +
-            "When she refuses, he has a near-suicidal ideation. He flees to Central Park, finding temporary " +
-            "solace near the ducks. His alienation peaks."
+            "After the Sally disaster, Holden breaks down and desperately asks if she'll go away with him. When she refuses, he experiences a mental breakdown and decides to go to Central Park."
         );
-        centralParkEscape.addPerson("Sally Hayes, ducks (symbolic)");
-        centralParkEscape.addQuote("It really did depress me, it really did. I'm in New York and it's lousy and phony.");
-        centralParkEscape.addAnalysis("The park represents nature and innocence in the phony urban landscape. " +
-            "Holden's concern for the ducks reveals his empathy for vulnerable creatures displaced from " +
-            "their 'place.' This parallels his own displacement. The repetition ('It really did...it really did') " +
-            "emphasizes his spiraling mental state. His connection to nature is more authentic than any human interaction.");
-        centralParkEscape.setThemeticElements("Nature vs. urban decay, Suicidal ideation, Compassion amidst alienation");
+        centralParkEscape.addPerson("Sally Hayes, ducks");
+        centralParkEscape.addQuote("Key Quotes: \"But I didn't see any ducks around. I walked all around the whole damn lake--I damn near fell in once, in fact--but I didn't see a single duck.\" (169)");
+        centralParkEscape.addAnalysis("Analysis: The park symbolizes nature and innocence in contrast to the noisy, phony urban cities. Holden's desire to see a duck shows his empathy for vulnerable things and creatures in nature and his authenticity toward nature vs toward the hypocritical society.. However this also demonstrates his own situation of not being able to find someone or something reliable to stay with. His instability is just like that of the ducks.");
+        centralParkEscape.setThemeticElements("Nature vs. urban decay, alienation");
         journey.addLocation(centralParkEscape);
 
-        // Day 2 - Museum of Natural History
-        JourneyLocation museum = new JourneyLocation(
-            "Museum of Natural History - Frozen Innocence",
-            "Day 2 - Evening",
-            "Night",
-            -6.0,
-            "Museum of Natural History, Upper West Side, Manhattan",
-            "After his breakdown, Holden reunites with his younger sister Phoebe. They visit the museum, " +
-            "where Holden finds comfort in the static, unchanging displays. He loves the museum because " +
-            "it preserves innocence and prevents decay—everything he fears in the real world."
-        );
-        museum.addPerson("Phoebe (his sister), museum visitors");
-        museum.addQuote("The best thing, though, in that museum was that everything always stayed right where it was.");
-        museum.addAnalysis("This quote crystallizes Holden's death wish—he yearns for stasis, for preservation " +
-            "against time's corruption. The museum represents his desire to freeze youth and innocence " +
-            "before phoniness and sexuality destroy them. His love for Phoebe is the only authentic emotion " +
-            "he expresses. The museum is a metaphor for his consciousness: protected but ultimately lifeless, " +
-            "a retreat from rather than engagement with reality.");
-        museum.setThemeticElements("Preservation of innocence, Death wish, Authentic sibling love, Time's corrosion");
-        journey.addLocation(museum);
-
-        // Day 2/3 - Ducks in Central Park (Symbolic Concern)
-        JourneyLocation ducksSymbol = new JourneyLocation(
-            "Obsession with Ducks - Displaced Concern",
-            "Day 2 - Multiple times",
-            "Throughout the day",
-            -7.5,
-            "Central Park lagoon, Manhattan",
-            "Holden's repeated obsession with where the ducks go in winter represents his displaced " +
-            "anxiety. He can't articulate his own displacement, so he fixates on the ducks. This is " +
-            "a nervous mannerism masking deeper existential terror about belonging."
-        );
-        ducksSymbol.addPerson("None (symbolic)");
-        ducksSymbol.addQuote("Where do the ducks go? Do you know, by any chance? I mean does somebody go around and notify them that it's time to go, or do they just fly away on their own?");
-        ducksSymbol.addAnalysis("This obsessive questioning reveals Holden's need for external guidance and structure. " +
-            "He can't fathom autonomous action—mirroring his own paralysis. The ducks symbolize innocence " +
-            "displaced by seasonal change (time, maturation). His repeated asking is performative anxiety, " +
-            "a way to engage without genuine connection. The question is fundamentally unanswerable, like " +
-            "his existential problems.");
-        ducksSymbol.setThemeticElements("Displacement, Nervous tic, Existential anxiety, Lost innocence");
-        journey.addLocation(ducksSymbol);
-
-        // Day 3 - Mr. Antolini's Apartment (The Predatory Phony)
         JourneyLocation antolini = new JourneyLocation(
-            "Mr. Antolini's Apartment - Betrayal of Trust",
-            "Day 3 - Monday",
-            "Night/Early morning",
-            -9.5,
-            "East Side, Manhattan",
-            "Holden seeks refuge with former teacher Mr. Antolini, who offers food, philosophy, and " +
-            "a bed. But Antolini's apparent homosexual advances traumatize Holden. The supposed mentor " +
-            "becomes the ultimate phony—intellectually sophisticated but morally corrupt. Holden flees."
+            "Mr. Antolini’s Advice",
+            "Day2-Late night",
+            "Night",
+            -3.0,
+            "Mr.Antolini’s apartment in Manhattan, New York",
+            "Holden visits Mr.Antolini upon his invitation who gives him serious advice about his future and warns him the importance of taking actions to correct his future, this gave Holden some comfort at the beginning."
         );
-        antolini.addPerson("Mr. Antolini (teacher/predator)");
-        antolini.addQuote("It's full of phonies, and all you do is get more depressed. So I don't know. It's terrible, it is, truly.");
-        antolini.addAnalysis("Antolini articulates Holden's despair while embodying its source: adult hypocrisy. " +
-            "The man who recognizes phoniness practices it most dangerously. This scene represents Holden's " +
-            "final loss of faith in adult guidance. The attempted assault isn't just sexual; it's a violation " +
-            "of trust by the one adult figure who seemed to understand him. This precipitates his total breakdown.");
-        antolini.setThemeticElements("Adult hypocrisy, Sexual predation disguised as mentorship, Loss of innocence");
+        antolini.addPerson("Mr. Antolini");
+        antolini.addQuote("Quote: \"Then he said, 'This fall I think you're riding for--it's a special kind of fall, a horrible kind. The man falling isn't permitted to feel or hear himself hit bottom. '\" (204)");
+        antolini.addAnalysis("Analysis: Mr. Antolini in this case serves as a guidance to Holden as Mr. Antolini is one of the few adults that truly understand the stuggle of Holden. His advice gave Holden a place of comfort and rest from his struggle lately. Mr.Antolini pointed out that Holden has begun to fail as an individual in society and no longer just someone who droppe out of school. Which demonstrates the intensification of Holden's issue but also forced Holden to reconsider his future, giving him some temporary relief until Holden found out the inappropriate side of Mr.Antolini.");
+        antolini.setThemeticElements("Mentorship, Guidance, Emotional support");
         journey.addLocation(antolini);
 
-        // Day 3 - Grand Central Terminal (Rebirth Fantasy/Breakdown)
-        JourneyLocation grandCentral = new JourneyLocation(
-            "Grand Central Terminal - The Catcher Fantasy",
-            "Day 3 - Early morning",
-            "Dawn",
-            -9.0,
-            "Grand Central Terminal, Manhattan",
-            "Fleeing Antolini, Holden spends the night in Grand Central. In the terminal, he fantasizes " +
-            "about being 'the catcher in the rye'—rescuing children from falling off the cliff of adulthood. " +
-            "This fantasy reveals his desire to prevent all corruption, an impossible, death-oriented fantasy."
+        JourneyLocation antoliniBetrayal = new JourneyLocation(
+            "Pervert and Mentor",
+            "Day2-Late night",
+            "Night",
+            -9.5,
+            "Mr.Antolini’s apartment in Manhattan, New York",
+            "Holden woke up discovering Mr.Antolini patting him on the head and called Mr.Antoline a pervert and a phony."
         );
-        grandCentral.addPerson("None; fantasy children");
-        grandCentral.addQuote("Somebody's got to catch you if you start to go over. I'd just be the catcher in the rye and all.");
-        grandCentral.addAnalysis("The 'catcher' fantasy is Holden's manifesto of futility. He misunderstands " +
-            "'If a body catch a body coming through the rye' (Burns poem, 'If a body MEET a body')—" +
-            "his misreading symbolizes his fundamental alienation. The fantasy reveals messianic delusion " +
-            "masking suicidal ideation. He wants to freeze the world, prevent growth, deny time. " +
-            "This is the novel's thematic climax: childhood vs. adulthood, innocence vs. corruption, " +
-            "stasis vs. change. His mission is existentially impossible.");
-        grandCentral.setThemeticElements("Messianic delusion, Resistance to maturation, Death wish as salvation");
-        journey.addLocation(grandCentral);
+        antoliniBetrayal.addPerson("Mr. Antolini");
+        antoliniBetrayal.addQuote("Quote: \"I could hardly get them on I was so damn nervous. I know more damn perverts, at schools and all, than anybody you ever met, and they're always being perverty when I'm around.\" (212)");
+        antoliniBetrayal.addAnalysis("Analysis: This paragraph highlights the transition from complete trust to Mr.Antolini to now the disappearing of mentorship bond between Holden and Mr.Antolini, he claims: \"they're always pervert when I'm around\" to show that he has lost his trust in Mr.Antolini's word and him as a mentor. The action of patting on Holden's head while he is asleep is seen as inappropriate and dangerous to Holden. For which he is now more hurt that even one of his most trusted adults has become a phony that possesed a goal for inviting Holden over to stay. He became more frustrated and entered a deeper state of distrust for society.");
+        antoliniBetrayal.setThemeticElements("Betrayal, Loss of trust, Sexual predation, Alienation");
+        journey.addLocation(antoliniBetrayal);
 
-        // Day 3 - Breakdown/Psychiatric Hold
-        JourneyLocation hospitalEnd = new JourneyLocation(
-            "Recovery & Hospitalization - Ambiguous Ending",
-            "Day 3 - Later",
-            "Throughout Day 3 into recovery",
-            -5.0,
-            "Psychiatric hospital in California (implied)",
-            "After his breakdown, Holden is hospitalized. The novel ends with him ambiguously " +
-            "recovering, narrating from a hospital. He's gained perspective but remains deeply " +
-            "troubled. The ending is deliberately ambiguous about his psychological status."
+        JourneyLocation remediation = new JourneyLocation(
+            "Remediation of innocence",
+            "Day 3-Morning",
+            "Morning",
+            3.0,
+            "Manhattan, New York",
+            "Holden Watches Phoebe ride the carousel, instead of stopping Phoebe out of protection, Holden allows Phoebe to ride in the Carrousel and have fun."
         );
-        hospitalEnd.addPerson("Hospital staff, psychoanalysts, Phoebe (visits)");
-        hospitalEnd.addQuote("I really do. That's the thing about me. I'm quite the sex maniac, in my own way. I really am. I've had quite a few opportunities to lose my virginity and all, but I never got around to it.");
-        hospitalEnd.addAnalysis("Even in recovery, Holden's self-awareness is filtered through defensive humor " +
-            "and irony. He confesses his sexual confusion and passivity. The admission of never acting " +
-            "represents his broader paralysis. His recovery is incomplete; he remains trapped in the " +
-            "same alienated consciousness. The hospital doesn't cure him—it merely contains him. " +
-            "His final state mirrors his initial state: intelligent, articulate, but fundamentally unable " +
-            "to genuinely connect with the human world.");
-        hospitalEnd.setThemeticElements("Incomplete recovery, Defensive irony persists, Existential paralysis");
-        journey.addLocation(hospitalEnd);
+        remediation.addPerson("Phoebe Caulfield");
+        remediation.addQuote("Quote: \"The thing with kids is, if they want to grab the gold ring, you have to let them do it, and not say anything. If they fall off they fall off, but it's bad if you say anything to them.\"(230)");
+        remediation.addAnalysis("Analysis: This moment marked a shift in Holden's unchanging mindset about phonies and the fact that kids must remain innocent. Before this, he wanted to protect the innocence that Phoebe possessed no matter what happened. But here he allows Phoebe to take the risk of riding in a carousel in order to grow and learn. He has made a deal with himself and accepted the fact that growing up is a process of losing innocence, it often involves risk and danger that can not be avoided. Which also showed his gradual adaptation to accept reality.");
+        remediation.setThemeticElements("Innocence, Growth, Acceptance of reality");
+        journey.addLocation(remediation);
+
+        JourneyLocation westward = new JourneyLocation(
+            "Way to the west",
+            "Unkown",
+            "Unknown",
+            5.0,
+            "Mental Hospital in California",
+            "Holden has accepted the advice of Mr.Antolini in the end, going to California for mental tratments, spending time with D.B. and resting to understand what reality is"
+        );
+        westward.addPerson("Hospital staff, psychoanalysts, Phoebe (visits)");
+        westward.addQuote("Quote: \"A lot of people, especially this one psychoanalyst guy they have here, keeps asking me if I'm going apply myself when I go back to school next September. It's such a stupid question\" (232)");
+        westward.addAnalysis("Analysis: The book ended with a relatively open response to the reader, Holden mentions the fact that he is returning to school. Which can almost be seen as a deal he made with himself-going to school in exchange for understanding the reality and phonies. He is no longer illusional as he was before, yet when he said \"It's such a stupid question\" he remains the old judgmental Holden that has always been around.");
+        westward.setThemeticElements("Recovery, Reality, Continued judgment");
+        journey.addLocation(westward);
 
         // Generate the markdown report
         journey.generateMarkdownReport(
@@ -211,10 +155,10 @@ public class JourneyBuilder {
 
         // Print journey summary to console
         System.out.println(journey.getTitle());
-        System.out.println("=".repeat(60));
+        System.out.println(new String(new char[60]).replace('\0', '='));
         System.out.println("Total Locations: " + journey.getLocations().size());
         System.out.println("Average Emotional State: " + String.format("%.1f/10", journey.getAverageEmotionalState()));
-        System.out.println("=".repeat(60));
+        System.out.println(new String(new char[60]).replace('\0', '='));
         System.out.println("\nJourney Progression:");
         for (JourneyLocation loc : journey.getLocations()) {
             System.out.println(loc.toString());

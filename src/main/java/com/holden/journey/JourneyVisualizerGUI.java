@@ -29,20 +29,24 @@ public class JourneyVisualizerGUI extends JFrame {
         details = new LocationDetailsPanel();
         map = new NYCMapPanel(journey.getLocations());
         usMap = new USMapPanel(journey.getLocations());
+        JTabbedPane centerTabs = new JTabbedPane();
 
         // Set up location selection listener
         locationList.setSelectionListener(location -> {
             details.displayLocation(location);
+            centerTabs.setSelectedComponent(details);
             repaint();
         });
 
         map.setSelectionListener(location -> {
             details.displayLocation(location);
+            centerTabs.setSelectedComponent(details);
             repaint();
         });
 
         usMap.setSelectionListener(location -> {
             details.displayLocation(location);
+            centerTabs.setSelectedComponent(details);
             repaint();
         });
 
@@ -57,13 +61,11 @@ public class JourneyVisualizerGUI extends JFrame {
         leftPanel.setPreferredSize(new Dimension(250, 900));
         
         // Center: map and graph in tabs
-        JTabbedPane centerTabs = new JTabbedPane();
         
         JScrollPane mapScroll = new JScrollPane(map);
         JScrollPane usMapScroll = new JScrollPane(usMap);
         JPanel nycTab = new JPanel(new BorderLayout());
         nycTab.add(mapScroll, BorderLayout.CENTER);
-        nycTab.add(createNYCButtonPanel(centerTabs), BorderLayout.SOUTH);
 
         centerTabs.addTab("US Journey Map (PA to CA)", usMapScroll);
         centerTabs.addTab("NYC Map & Journey Path", nycTab);
@@ -78,26 +80,8 @@ public class JourneyVisualizerGUI extends JFrame {
         setVisible(true);
     }
 
-    private JPanel createNYCButtonPanel(JTabbedPane centerTabs) {
-        JPanel buttonPanel = new JPanel(new GridLayout(2, 5, 8, 8));
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        for (int i = 0; i < journey.getLocations().size(); i++) {
-            final int index = i;
-            JButton button = new JButton(String.valueOf(i + 1));
-            button.setToolTipText("Go to detail page for " + journey.getLocations().get(i).getName());
-            button.addActionListener(e -> {
-                details.displayLocation(journey.getLocations().get(index));
-                centerTabs.setSelectedComponent(details);
-            });
-            buttonPanel.add(button);
-        }
-
-        return buttonPanel;
-    }
-
     private HoldenJourney buildJourney() {
-        HoldenJourney holdenJourney = new HoldenJourney();
+        HoldenJourney journey = new HoldenJourney();
 
         JourneyLocation penceyDeparture = new JourneyLocation(
             "Pencey Prep Departure", "Day 1 - Saturday", "Late afternoon", -8.0,
@@ -207,9 +191,9 @@ public class JourneyVisualizerGUI extends JFrame {
         westward.addQuote("A lot of people, especially this one psychoanalyst guy they have here, keeps asking me if I'm going apply myself when I go back to school next September. It's such a stupid question.(232)");
         westward.addAnalysis("The ending is open, but Holden's willingness to consider school again suggests he is slowly negotiating the gap between his ideals and the world. He remains judgmental, yet less lost.");
         westward.setThemeticElements("Recovery, Reality, Continued judgment");
-        holdenJourney.addLocation(westward);
+        journey.addLocation(westward);
 
-        return holdenJourney;
+        return journey;
     }
 
     public static void main(String[] args) {
