@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -21,6 +22,10 @@ public class USMapPanel extends JPanel {
     private BufferedImage mapImage;
     private static final int MAP_PADDING = 40;
     private static final int PIN_RADIUS = 10;
+    private static final double CONTIGUOUS_US_LEFT_RATIO = 0.10;
+    private static final double CONTIGUOUS_US_TOP_RATIO = 0.06;
+    private static final double CONTIGUOUS_US_RIGHT_RATIO = 0.96;
+    private static final double CONTIGUOUS_US_BOTTOM_RATIO = 0.87;
 
     public interface MapSelectionListener {
         void locationSelected(JourneyLocation location);
@@ -56,18 +61,37 @@ public class USMapPanel extends JPanel {
 
     private void loadMapImage() {
         URL imageUrl = getClass().getResource("/us-map.png");
+        if (imageUrl == null) {
+            imageUrl = getClass().getClassLoader().getResource("us-map.png");
+        }
+        if (imageUrl == null) {
+            imageUrl = ClassLoader.getSystemResource("us-map.png");
+        }
+        if (imageUrl == null) {
+            File fallback = new File("src/main/resources/us-map.png");
+            if (fallback.exists()) {
+                try {
+                    imageUrl = fallback.toURI().toURL();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         if (imageUrl != null) {
             try {
                 mapImage = ImageIO.read(imageUrl);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else {
+            System.err.println("USMapPanel: us-map.png resource not found. Using drawn fallback map.");
         }
     }
 
     private void setupUSCoordinates() {
         double[][] usCoords = {
-            {40.44, -75.33},   // Pencey Prep (Pennsylvania) - Start
+            {40.44, -78.50},   // Pencey Prep (Pennsylvania) - Start
             {40.75, -73.98},   // NYC - Grand Central Terminal
             {40.75, -73.98},   // Hotel Edmont (same area)
             {40.75, -73.98},   // Sally Hayes Date (same area)
@@ -116,14 +140,13 @@ public class USMapPanel extends JPanel {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         if (mapImage != null) {
-            Rectangle mapArea = getMapArea();
-            g2d.drawImage(mapImage, mapArea.x, mapArea.y, mapArea.width, mapArea.height, null);
+            Rectangle imageArea = getImageDrawArea();
+            g2d.drawImage(mapImage, imageArea.x, imageArea.y, imageArea.width, imageArea.height, null);
         } else {
             drawMapBackground(g2d);
             drawUSOutline(g2d);
         }
 
-        drawStateLabels(g2d);
         drawJourneyPath(g2d);
         drawPins(g2d);
         drawLegend(g2d);
@@ -134,8 +157,34 @@ public class USMapPanel extends JPanel {
                 Math.max(100, getWidth() - 2 * MAP_PADDING), Math.max(100, getHeight() - 2 * MAP_PADDING));
     }
 
-    private Point geoToPixel(double lat, double lon) {
+    private Rectangle getImageDrawArea() {
         Rectangle mapArea = getMapArea();
+        double imageAspect = mapImage.getWidth() / (double) mapImage.getHeight();
+        double areaAspect = mapArea.getWidth() / (double) mapArea.getHeight();
+
+        if (imageAspect > areaAspect) {
+            int width = mapArea.width;
+            int height = (int) (width / imageAspect);
+            int y = mapArea.y + (mapArea.height - height) / 2;
+            return new Rectangle(mapArea.x, y, width, height);
+        } else {
+            int height = mapArea.height;
+            int width = (int) (height * imageAspect);
+            int x = mapArea.x + (mapArea.width - width) / 2;
+            return new Rectangle(x, mapArea.y, width, height);
+        }
+    }
+
+    private Rectangle getContiguousUSArea(Rectangle imageArea) {
+        int x = imageArea.x + (int) (imageArea.width * CONTIGUOUS_US_LEFT_RATIO);
+        int y = imageArea.y + (int) (imageArea.height * CONTIGUOUS_US_TOP_RATIO);
+        int width = (int) (imageArea.width * (CONTIGUOUS_US_RIGHT_RATIO - CONTIGUOUS_US_LEFT_RATIO));
+        int height = (int) (imageArea.height * (CONTIGUOUS_US_BOTTOM_RATIO - CONTIGUOUS_US_TOP_RATIO));
+        return new Rectangle(x, y, width, height);
+    }
+
+    private Point geoToPixel(double lat, double lon) {
+        Rectangle drawArea = mapImage != null ? getContiguousUSArea(getImageDrawArea()) : getMapArea();
         double minLat = 24.5;
         double maxLat = 49.5;
         double minLon = -125.0;
@@ -146,8 +195,8 @@ public class USMapPanel extends JPanel {
         xNorm = Math.max(0, Math.min(1, xNorm));
         yNorm = Math.max(0, Math.min(1, yNorm));
 
-        int x = mapArea.x + (int) (xNorm * mapArea.width);
-        int y = mapArea.y + (int) (yNorm * mapArea.height);
+        int x = drawArea.x + (int) (xNorm * drawArea.width);
+        int y = drawArea.y + (int) (yNorm * drawArea.height);
         return new Point(x, y);
     }
 
@@ -168,23 +217,44 @@ public class USMapPanel extends JPanel {
     }
 
     private void drawUSOutline(Graphics2D g2d) {
-        g2d.setColor(new Color(100, 100, 100, 50));
-        g2d.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        g2d.drawRect(MAP_PADDING, MAP_PADDING, getWidth() - 2 * MAP_PADDING, getHeight() - 2 * MAP_PADDING);
+        g2d.setColor(new Color(100, 100, 100, 100));
+        g2d.setStroke(new BasicStroke(1.5f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        
+        // Draw approximate state boundaries
+        drawStateBoundaries(g2d);
     }
 
-    private void drawStateLabels(Graphics2D g2d) {
-        g2d.setFont(new Font("Arial", Font.PLAIN, 10));
-        g2d.setColor(new Color(100, 100, 100));
-
-        Point paPoint = geoToPixel(40.44, -75.33);
-        g2d.drawString("Pennsylvania", paPoint.x + 10, paPoint.y - 10);
-
-        Point nyPoint = geoToPixel(40.75, -73.98);
-        g2d.drawString("New York", nyPoint.x + 10, nyPoint.y + 15);
-
-        Point caPoint = geoToPixel(37.77, -122.42);
-        g2d.drawString("California", caPoint.x - 70, caPoint.y + 20);
+    private void drawStateBoundaries(Graphics2D g2d) {
+        Rectangle mapArea = getMapArea();
+        
+        // Pennsylvania (40.44, -75.33) - approximate borders
+        Point paNE = geoToPixel(41.5, -74.5);
+        Point paSW = geoToPixel(39.5, -80.5);
+        g2d.setColor(new Color(150, 150, 150, 120));
+        g2d.drawRect(paSW.x, paNE.y, paNE.x - paSW.x, paSW.y - paNE.y);
+        
+        // New York (40.75, -73.98) - approximate borders
+        Point nyNE = geoToPixel(45.0, -71.5);
+        Point nySW = geoToPixel(40.5, -79.5);
+        g2d.drawRect(nySW.x, nyNE.y, nyNE.x - nySW.x, nySW.y - nyNE.y);
+        
+        // California (37.77, -122.42) - approximate borders
+        Point caNE = geoToPixel(42.0, -114.0);
+        Point caSW = geoToPixel(32.5, -124.5);
+        g2d.drawRect(caSW.x, caNE.y, caNE.x - caSW.x, caSW.y - caNE.y);
+        
+        // Add state labels
+        g2d.setFont(new Font("Arial", Font.BOLD, 12));
+        g2d.setColor(new Color(80, 80, 80, 180));
+        
+        Point paCenter = geoToPixel(40.44, -76.0);
+        g2d.drawString("Pennsylvania", paCenter.x - 40, paCenter.y);
+        
+        Point nyCenter = geoToPixel(42.75, -75.0);
+        g2d.drawString("New York", nyCenter.x - 30, nyCenter.y);
+        
+        Point caCenter = geoToPixel(37.0, -119.5);
+        g2d.drawString("California", caCenter.x - 35, caCenter.y);
     }
 
     private void drawJourneyPath(Graphics2D g2d) {

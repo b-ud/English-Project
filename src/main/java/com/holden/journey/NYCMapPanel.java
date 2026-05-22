@@ -3,19 +3,27 @@ package com.holden.journey;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.List;
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 /**
  * Panel displaying a visual NYC map with Holden's journey path and location pins.
  */
 public class NYCMapPanel extends JPanel {
-    private List<JourneyLocation> locations;
+    private final List<JourneyLocation> locations;
+    private double[][] nycCoordinates; // Local storage for NYC-specific coordinates
     private int hoveredPin = -1;
     private int selectedPin = -1;
     private MapSelectionListener listener;
+    private BufferedImage mapImage;
     private static final int MAP_PADDING = 30;
     private static final int PIN_RADIUS = 12;
+    private static final String MAP_RESOURCE = "/New-York-City-Map-New-York-1265x964.jpg";
 
     public interface MapSelectionListener {
         void locationSelected(JourneyLocation location);
@@ -23,9 +31,11 @@ public class NYCMapPanel extends JPanel {
 
     public NYCMapPanel(List<JourneyLocation> locations) {
         this.locations = locations;
+        loadMapImage();
         setupCoordinates();
         setBackground(new Color(245, 250, 255));
-        setPreferredSize(new Dimension(600, 500));
+        setPreferredSize(new Dimension(mapImage != null ? mapImage.getWidth() : 600,
+                mapImage != null ? mapImage.getHeight() : 500));
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -56,30 +66,19 @@ public class NYCMapPanel extends JPanel {
     }
 
     private void setupCoordinates() {
-        // Normalized NYC coordinates (0-100 scale)
-        String[] names = {"Pencey Prep Departure", "Grand Central Terminal & Hotel Edmont",
-                          "Planning the Sally Encounter", "Sally Hayes Date - Theater & Lunch",
-                          "Central Park - Breaking Point", "Museum of Natural History - Frozen Innocence",
-                          "Obsession with Ducks - Displaced Concern", "Mr. Antolini's Apartment - Betrayal of Trust",
-                          "Grand Central Terminal - The Catcher Fantasy", "Recovery & Hospitalization - Ambiguous Ending"};
-
-        // Coordinates representing NYC (approximate normalized positions)
-        double[][] coords = {
-            {20, 10},   // Pencey (outside NYC - PA)
-            {50, 50},   // Grand Central (Midtown)
-            {50, 48},   // Hotel room
-            {52, 52},   // Theater/Restaurant (Midtown)
-            {45, 65},   // Central Park
-            {42, 72},   // Museum (Upper West Side)
-            {45, 65},   // Central Park (ducks)
-            {65, 55},   // Antolini's (East Side)
-            {50, 50},   // Grand Central (again)
-            {25, 85}    // Hospital (California - represented far)
+        // Normalized NYC coordinates (0-100 scale) - stored locally in this panel
+        nycCoordinates = new double[][] {
+            {10, 45},   // Pencey (outside NYC - PA)
+            {55, 50},   // Grand Central (Midtown)
+            {54, 52},   // Hotel room
+            {59, 55},   // Theater/Restaurant (Midtown)
+            {52, 30},   // Central Park
+            {50, 27},   // Museum (Upper West Side)
+            {52, 32},   // Central Park (ducks)
+            {67, 52},   // Antolini's (East Side)
+            {55, 50},   // Grand Central (again)
+            {8, 92}     // Hospital (California - represented far left/bottom)
         };
-
-        for (int i = 0; i < locations.size() && i < coords.length; i++) {
-            locations.get(i).setCoordinates(coords[i][0], coords[i][1]);
-        }
     }
 
     private void handleClick(int x, int y) {
@@ -94,9 +93,10 @@ public class NYCMapPanel extends JPanel {
     }
 
     private int getPin(int x, int y) {
-        for (int i = 0; i < locations.size(); i++) {
-            int pinX = (int) (MAP_PADDING + locations.get(i).getLatitude() * (getWidth() - 2 * MAP_PADDING) / 100);
-            int pinY = (int) (MAP_PADDING + locations.get(i).getLongitude() * (getHeight() - 2 * MAP_PADDING) / 100);
+        for (int i = 0; i < locations.size() && i < nycCoordinates.length; i++) {
+            Point pinPoint = getPinPoint(i);
+            int pinX = pinPoint.x;
+            int pinY = pinPoint.y;
 
             if (Math.sqrt(Math.pow(x - pinX, 2) + Math.pow(y - pinY, 2)) <= PIN_RADIUS) {
                 return i;
@@ -111,10 +111,66 @@ public class NYCMapPanel extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        drawMapBackground(g2d);
+        if (mapImage != null) {
+            Rectangle imageArea = getImageDrawArea();
+            g2d.drawImage(mapImage, imageArea.x, imageArea.y, imageArea.width, imageArea.height, null);
+        } else {
+            drawMapBackground(g2d);
+        }
         drawJourneyPath(g2d);
         drawPins(g2d);
         drawLegend(g2d);
+    }
+
+    private Rectangle getImageDrawArea() {
+        Rectangle panelArea = new Rectangle(MAP_PADDING, MAP_PADDING,
+                getWidth() - 2 * MAP_PADDING, getHeight() - 2 * MAP_PADDING);
+        double imageAspect = mapImage.getWidth() / (double) mapImage.getHeight();
+        double areaAspect = panelArea.getWidth() / (double) panelArea.getHeight();
+
+        if (imageAspect > areaAspect) {
+            int width = panelArea.width;
+            int height = (int) (width / imageAspect);
+            int y = panelArea.y + (panelArea.height - height) / 2;
+            return new Rectangle(panelArea.x, y, width, height);
+        } else {
+            int height = panelArea.height;
+            int width = (int) (height * imageAspect);
+            int x = panelArea.x + (panelArea.width - width) / 2;
+            return new Rectangle(x, panelArea.y, width, height);
+        }
+    }
+
+    private void loadMapImage() {
+        URL imageUrl = getClass().getResource(MAP_RESOURCE);
+        if (imageUrl == null) {
+            imageUrl = getClass().getClassLoader().getResource(MAP_RESOURCE.substring(1));
+        }
+        if (imageUrl == null) {
+            File fallback = new File("src/main/resources" + MAP_RESOURCE);
+            if (fallback.exists()) {
+                try {
+                    imageUrl = fallback.toURI().toURL();
+                } catch (IOException e) {
+                    System.err.println("Unable to resolve NYC map fallback path: " + e.getMessage());
+                }
+            }
+        }
+        if (imageUrl != null) {
+            try {
+                mapImage = ImageIO.read(imageUrl);
+            } catch (IOException e) {
+                System.err.println("Unable to load NYC map image: " + e.getMessage());
+            }
+        }
+    }
+
+    private Point getPinPoint(int index) {
+        Rectangle drawArea = mapImage != null ? getImageDrawArea() : new Rectangle(MAP_PADDING, MAP_PADDING,
+                getWidth() - 2 * MAP_PADDING, getHeight() - 2 * MAP_PADDING);
+        int pinX = drawArea.x + (int) (nycCoordinates[index][0] * drawArea.width / 100);
+        int pinY = drawArea.y + (int) (nycCoordinates[index][1] * drawArea.height / 100);
+        return new Point(pinX, pinY);
     }
 
     private void drawMapBackground(Graphics2D g2d) {
@@ -143,22 +199,19 @@ public class NYCMapPanel extends JPanel {
     }
 
     private void drawJourneyPath(Graphics2D g2d) {
-        if (locations.size() < 2) return;
+        if (locations.size() < 2 || nycCoordinates.length < 2) return;
 
         g2d.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g2d.setColor(new Color(100, 100, 150, 150));
 
-        for (int i = 0; i < locations.size() - 1; i++) {
-            int x1 = (int) (MAP_PADDING + locations.get(i).getLatitude() * (getWidth() - 2 * MAP_PADDING) / 100);
-            int y1 = (int) (MAP_PADDING + locations.get(i).getLongitude() * (getHeight() - 2 * MAP_PADDING) / 100);
+        for (int i = 0; i < locations.size() - 1 && i < nycCoordinates.length - 1; i++) {
+            Point p1 = getPinPoint(i);
+            Point p2 = getPinPoint(i + 1);
 
-            int x2 = (int) (MAP_PADDING + locations.get(i + 1).getLatitude() * (getWidth() - 2 * MAP_PADDING) / 100);
-            int y2 = (int) (MAP_PADDING + locations.get(i + 1).getLongitude() * (getHeight() - 2 * MAP_PADDING) / 100);
-
-            g2d.drawLine(x1, y1, x2, y2);
+            g2d.drawLine(p1.x, p1.y, p2.x, p2.y);
 
             // Draw arrow
-            drawArrow(g2d, x1, y1, x2, y2);
+            drawArrow(g2d, p1.x, p1.y, p2.x, p2.y);
         }
     }
 
@@ -177,10 +230,11 @@ public class NYCMapPanel extends JPanel {
     }
 
     private void drawPins(Graphics2D g2d) {
-        for (int i = 0; i < locations.size(); i++) {
+        for (int i = 0; i < locations.size() && i < nycCoordinates.length; i++) {
             JourneyLocation loc = locations.get(i);
-            int pinX = (int) (MAP_PADDING + loc.getLatitude() * (getWidth() - 2 * MAP_PADDING) / 100);
-            int pinY = (int) (MAP_PADDING + loc.getLongitude() * (getHeight() - 2 * MAP_PADDING) / 100);
+            Point pinPoint = getPinPoint(i);
+            int pinX = pinPoint.x;
+            int pinY = pinPoint.y;
 
             // Draw pin circle
             g2d.setColor(loc.getThemeColor());

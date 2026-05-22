@@ -8,8 +8,7 @@ import javax.swing.border.EmptyBorder;
  * Panel displaying detailed information about a selected location.
  */
 public class LocationDetailsPanel extends JPanel {
-    private JourneyLocation selectedLocation;
-    private JTextArea detailsText;
+    private final JEditorPane detailsPane;
     private static final Color DETAIL_BG = new Color(245, 245, 255);
 
     public LocationDetailsPanel() {
@@ -17,15 +16,14 @@ public class LocationDetailsPanel extends JPanel {
         setBackground(DETAIL_BG);
         setBorder(new EmptyBorder(15, 15, 15, 15));
 
-        detailsText = new JTextArea();
-        detailsText.setEditable(false);
-        detailsText.setLineWrap(true);
-        detailsText.setWrapStyleWord(true);
-        detailsText.setFont(new Font("Arial", Font.PLAIN, 11));
-        detailsText.setBackground(DETAIL_BG);
-        detailsText.setBorder(new EmptyBorder(10, 10, 10, 10));
+        detailsPane = new JEditorPane("text/html", "");
+        detailsPane.setEditable(false);
+        detailsPane.setBackground(DETAIL_BG);
+        detailsPane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+        detailsPane.setFont(new Font("Arial", Font.PLAIN, 11));
+        detailsPane.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-        JScrollPane scrollPane = new JScrollPane(detailsText);
+        JScrollPane scrollPane = new JScrollPane(detailsPane);
         scrollPane.setBorder(null);
         add(scrollPane, BorderLayout.CENTER);
 
@@ -33,63 +31,71 @@ public class LocationDetailsPanel extends JPanel {
     }
 
     public void displayLocation(JourneyLocation location) {
-        this.selectedLocation = location;
-        StringBuilder text = new StringBuilder();
+        StringBuilder html = new StringBuilder();
 
-        text.append("═══════════════════════════════════════\n");
-        text.append(location.getName()).append("\n");
-        text.append("═══════════════════════════════════════\n\n");
+        html.append("<html><body style='font-family:Arial,sans-serif; font-size:12px; color:#111;'>");
+        html.append("<h1 style='font-size:18px; margin-bottom:6px;'>").append(location.getName()).append("</h1>");
+        html.append("<p style='margin:0 0 12px 0; font-weight:bold; color:#333;'>");
+        html.append(location.getLocation()).append("<br>");
+        html.append(location.getDay()).append(" - ").append(location.getTimeOfDay()).append("<br>");
+        html.append("Emotional State: ").append(String.format("%.1f/10", location.getEmotionalState()));
+        html.append("</p>");
 
-        text.append("📍 Location: ").append(location.getLocation()).append("\n");
-        text.append("📅 Time: ").append(location.getDay()).append(" - ").append(location.getTimeOfDay()).append("\n");
-        text.append("💔 Emotional State: ").append(String.format("%.1f/10", location.getEmotionalState())).append("\n\n");
-
-        text.append("Description:\n");
-        text.append(location.getDescription()).append("\n\n");
+        html.append(sectionHtml("Description", location.getDescription()));
 
         if (!location.getPeopleInvolved().isEmpty()) {
-            text.append("People Involved:\n");
+            StringBuilder people = new StringBuilder();
             for (String person : location.getPeopleInvolved()) {
-                text.append("  • ").append(person).append("\n");
+                people.append("<li>").append(person).append("</li>");
             }
-            text.append("\n");
+            html.append(sectionHtml("People Involved", "<ul style='margin-top:4px;margin-bottom:8px;padding-left:20px;'>" + people + "</ul>"));
         }
 
         if (!location.getQuotes().isEmpty()) {
-            text.append("Key Quotes:\n");
+            StringBuilder quotes = new StringBuilder();
             for (String quote : location.getQuotes()) {
-                text.append("  \"").append(quote).append("\"\n\n");
+                quotes.append("<blockquote style='margin:8px 0 12px 20px; color:#333; font-style:italic;'>").append(quote).append("</blockquote>");
             }
+            html.append(sectionHtml("Key Quotes", quotes.toString()));
         }
 
         if (!location.getQuoteAnalysis().isEmpty()) {
-            text.append("Analysis:\n");
-            for (String analysis : location.getQuoteAnalysis()) {
-                text.append("  ").append(analysis).append("\n\n");
+            StringBuilder analysis = new StringBuilder();
+            for (String analysisLine : location.getQuoteAnalysis()) {
+                analysis.append("<p style='margin:6px 0;'>").append(analysisLine).append("</p>");
             }
+            html.append(sectionHtml("Analysis", analysis.toString()));
         }
 
         if (location.getThemeticElements() != null) {
-            text.append("Thematic Elements:\n");
-            text.append("  ").append(location.getThemeticElements()).append("\n");
+            html.append(sectionHtml("Thematic Elements", location.getThemeticElements()));
         }
 
-        detailsText.setText(text.toString());
-        detailsText.setCaretPosition(0);
+        html.append("</body></html>");
+        detailsPane.setText(html.toString());
+        detailsPane.setCaretPosition(0);
+    }
+
+    private String sectionHtml(String title, String body) {
+        return "<div style='margin-bottom:12px;'>" +
+                "<div style='font-weight:bold; font-size:13px; margin-bottom:4px; color:#222;'>" + title + "</div>" +
+                "<div style='line-height:1.4;'>" + body + "</div>" +
+                "</div>";
     }
 
     private void showDefaultMessage() {
-        detailsText.setText("Welcome to Holden's Journey\n\n" +
-                "Click on a location in the timeline to view details.\n\n" +
-                "This interactive visualization chronicles Holden Caulfield's\n" +
-                "3-day descent through New York City, tracking his emotional\n" +
-                "state, encounters with phoniness, and the events leading to\n" +
-                "his psychological breakdown.\n\n" +
-                "Key themes:\n" +
-                "• Phoniness and social hypocrisy\n" +
-                "• Loss of innocence\n" +
-                "• Existential alienation\n" +
-                "• Suicidal ideation\n" +
-                "• Inability to connect authentically");
+        String html = "<html><body style='font-family:Arial,sans-serif; font-size:12px; color:#111;'>" +
+                "<h1 style='font-size:18px; margin-bottom:8px;'>Welcome to Holden's Journey</h1>" +
+                "<p style='margin:0 0 12px 0;'>Click a location in the timeline or use the NYC buttons below to view a uniform detail page for each stage of Holden's trip.</p>" +
+                "<p style='margin:0 0 8px 0; font-weight:bold;'>Key themes:</p>" +
+                "<ul style='margin-top:4px; padding-left:20px;'>" +
+                "<li>Phoniness and social hypocrisy</li>" +
+                "<li>Loss of innocence</li>" +
+                "<li>Existential alienation</li>" +
+                "<li>Suicidal ideation</li>" +
+                "<li>Inability to connect authentically</li>" +
+                "</ul>" +
+                "</body></html>";
+        detailsPane.setText(html);
     }
 }
